@@ -16,3 +16,41 @@ Play audio to /tmp/spotify-pipe:
         -e SPOTIFY_USER=... \
         -e SPOTIFY_PASSWORD=... \
         kevineye/librespot
+
+### docker-compose:
+
+version: "2"
+
+```yaml
+services:
+  snapserver:
+    container_name: snapserver
+    restart: always
+    volumes:
+      - /tmp/snapcastfifo:/data/spotify
+      - ./snapcast:/root/.config/snapserver
+    image: kevineye/snapcast
+    command: "snapserver -s pipe:///data/spotify/fifo?name=Spotify&sampleformat=44100:16:2"
+    ports:
+      - "1704:1704"
+      - "1705:1705"
+  airplay:
+    container_name: airplay
+    restart: always
+    image: kevineye/shairport-sync
+    network_mode: host
+    volumes:
+      - /tmp/snapcastfifo:/output
+    command: "-o pipe -- /output"
+
+  spotify:
+    container_name: spotify
+    restart: always
+    image: gronis/librespot
+    volumes:
+      - /tmp/snapcastfifo:/data
+    environment:
+      SPOTIFY_NAME: "Multiroom"
+      SPOTIFY_USER: "YourSpotifyUsername"
+      SPOTIFY_PASSWORD: "YourSpotifyPassword"
+```
