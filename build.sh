@@ -1,3 +1,6 @@
 #!/bin/bash
 
-docker build -t nickll/librespot .
+docker build \
+  --pull \
+  -t nickll/librespot \
+  .
