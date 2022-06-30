@@ -2,6 +2,8 @@ FROM alpine:edge
 
 WORKDIR /data
 
+# Break cache if new version is available
+ADD https://api.github.com/repos/librespot-org/librespot/git/refs/heads/master /tmp/version.json
 RUN apk -U add curl cargo portaudio-dev protobuf-dev libgcc \
  && cd /root \
  && curl -LO https://github.com/librespot-org/librespot/archive/master.zip \
