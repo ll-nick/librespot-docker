@@ -1,0 +1,32 @@
+name: Docker
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.version'
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set version environment variable
+        run: echo "DOCKER_IMAGE_VERSION=$(cat .version)" >> $GITHUB_OUTPUT
+        id: set-version
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: 'linux/amd64,linux/arm64,linux/arm/v7'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push server
+        uses: docker/build-push-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: nickll/librespot:latest,nickll/librespot:${{ steps.set-version.outputs.DOCKER_IMAGE_VERSION }}
