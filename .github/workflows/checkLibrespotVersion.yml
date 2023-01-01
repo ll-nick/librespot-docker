@@ -12,12 +12,12 @@ jobs:
           token: ${{ secrets.REPO_SCOPED_TOKEN }}
       - name: Fetch release version
         run: |
-          wget http://dl-cdn.alpinelinux.org/alpine/edge/testing/x86_64/APKINDEX.tar.gz
+          wget -q http://dl-cdn.alpinelinux.org/alpine/edge/testing/x86_64/APKINDEX.tar.gz
           tar -xf APKINDEX.tar.gz
-          grep -A1 '^P:librespot$' APKINDEX | grep '^V:' | sed 's/^V://' > .version
+          grep -A1 '^P:librespot$' APKINDEX | grep '^V:' | sed 's/^V://' | tee .version
       - name: Check for modified files
         id: git-check
-        run: echo modified=$([ -z "`git status --porcelain`" ] && echo "false" || echo "true") >> $GITHUB_OUTPUT
+        run: echo modified=$([ -z "`git status .version --porcelain`" ] && echo "false" || echo "true") >> $GITHUB_OUTPUT
       - name: Commit latest release version
         if: steps.git-check.outputs.modified == 'true'
         run: |
