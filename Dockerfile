@@ -5,5 +5,16 @@ RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/te
 ENV SPOTIFY_NAME Docker
 ENV SPOTIFY_DEVICE /data/fifo
 ENV INIT_VOLUME 100
+ENV CACHE_DIR /data/cache
+ENV BITRATE 320
+ENV ZEROCONF_PORT 5353
 
-CMD librespot -n "$SPOTIFY_NAME" -u "$SPOTIFY_USER" -p "$SPOTIFY_PASSWORD" --backend pipe --device "$SPOTIFY_DEVICE" -b 320 --zeroconf-port 5353 --initial-volume "$INIT_VOLUME"
+CMD librespot \
+    --backend pipe \
+    --bitrate "$BITRATE" \
+    --cache "$CACHE_DIR$" \
+    --device "$SPOTIFY_DEVICE" \
+    --enable-oauth \
+    --initial-volume "$INIT_VOLUME" \
+    --name "$SPOTIFY_NAME" \
+    --zeroconf-port "$ZEROCONF_PORT"
